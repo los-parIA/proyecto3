@@ -5,3 +5,5 @@ BINARY_COLORING_NAME = coloringSolver
 
 main: src/mainSAT.cpp src/satState/satState.cpp src/satSolver/satSolver.cpp
 	$(CC) $(CFLAGS) -o $(BINARY_SAT_NAME)  src/mainSAT.cpp src/satState/satState.cpp src/satSolver/satSolver.cpp
+mainColoring: src/mainColoring.cpp src/graph/graph.cpp
+	$(CC) $(CFLAGS) -o $(BINARY_COLORING_NAME) src/mainColoring.cpp src/graph/graph.cpp

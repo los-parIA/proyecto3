@@ -1,0 +1,7 @@
+c
+c
+c dimacs format for graphs
+c
+p edge 3 2
+e 0 1
+e 0 2
