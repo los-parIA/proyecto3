@@ -24,13 +24,6 @@ struct sat
   set<int> clausesToCheck;
 };
 
-struct graph
-{
-  int V;
-  int E;
-  map<int, vector<int>> G;
-};
-
 string satToString(const sat &sa);
 string satToStringPretty(const sat &sa);
 string solSatToString(const sat &sa);

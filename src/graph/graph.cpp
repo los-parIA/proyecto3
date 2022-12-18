@@ -46,7 +46,7 @@ void addEdge(graph &g, int from, int to)
 
 graph readGraphFromFile(string fileName)
 {
-    size_t vertices = 0, edges = 0;
+    size_t vertices = 0, edges = 0, colors = 0;
     graph g;
 
     try
@@ -69,7 +69,6 @@ graph readGraphFromFile(string fileName)
             if (iss >> ch)
             {
                 size_t from, to;
-                string format;
 
                 switch (ch)
                 {
@@ -78,13 +77,12 @@ graph readGraphFromFile(string fileName)
                 case 'p':
                     if (vertices || edges)
                         return g;
-                    if (iss >> format >> vertices >> edges)
+                    if (iss >> colors >> vertices >> edges)
                     {
-                        if ("edge" != format)
-                            return g;
 
                         g.V = vertices;
                         g.E = edges;
+                        g.colors = colors;
                     }
                     break;
                 case 'e':
@@ -105,5 +103,93 @@ graph readGraphFromFile(string fileName)
     {
         cerr << "Error: something went wrong while reading file" << endl;
         return g;
+    }
+}
+
+int writeGraphToSatFile(graph g, string fileName)
+{
+    try
+    {
+        ofstream file;
+
+        file.open(fileName, fstream::out);
+
+        file << "p cnf " << g.colors * g.V << " " << g.V + g.V * g.colors * (g.colors - 1) / 2 + 2  * ( g.colors * g.E) << endl;
+
+        int var[g.V + 1][g.colors + 1] ;
+        int counter = 1, x = 1;
+        while (x <= g.V)
+        {
+            int y = 1;
+            while (y <= g.colors)
+            {
+
+                var[x][y] = counter;
+                counter += 1;
+
+                y += 1;
+            }
+
+            x += 1;
+        }
+
+        x = 1;
+        while (x <= g.V)
+        {
+            int y = 1;
+            while (y <= g.colors)
+            {
+                file << var[x][y] << " ";
+
+                if (y == g.colors)
+                    file << "0" << endl;
+
+                y += 1;
+            }
+
+            x += 1;
+        }
+
+        x = 1;
+        while (x <= g.V)
+        {
+            int y = 1;
+            while (y <= g.colors - 1)
+            {
+                int z = y + 1;
+                while (z <= g.colors)
+                {
+                    file << -var[x][y] << " " << -var[x][z] << " 0" << endl;
+                    z += 1;
+                }
+
+                y += 1;
+            }
+
+            x += 1;
+        }
+
+        for (auto const &vu : g.G)
+        {
+            int v = vu.first;
+            for (int u : vu.second)
+            {
+                int y = 1;
+                while (y <= g.colors)
+                {
+                    file << -var[v][y] << " " << -var[u][y] << " 0" << endl;
+                    y += 1;
+                }
+            }
+        }
+
+        file.close();
+
+        return 0;
+    }
+    catch (...)
+    {
+        cerr << "Error: something went wrong while writing graph to cnf file" << endl;
+        return 1;
     }
 }

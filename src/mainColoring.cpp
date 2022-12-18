@@ -18,8 +18,11 @@ int main(int argc, char *argv[]) {
 
    // read the graph from file
    graph g = readGraphFromFile(argv[1]);   
-   
+
    cout << graphToString(g);
+
+   string outputcnf = argv[1];
+   int a = writeGraphToSatFile(g, outputcnf + ".cnf");
 
    return 0;
 }
