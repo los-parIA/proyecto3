@@ -1,0 +1,19 @@
+El proyecto posee 3 ejecutables, los cuales pueden ser creados usando los siguientes comandos:
+
+* SAT solver (el parametro -p de pretty es opcional)
+>./dpllSolver <archivo-cnf> -p 
+
+* SAT solver usando un algoritmo genetico (el parametro -p de pretty es opcional)
+>./dpllSolver <archivo-cnf> <numberOfEpochs> <numberOfindividuals> -p
+
+* k-coloring solver 
+>./coloringSolver <archivo-grafo> <archivo-salida>
+
+NOTAS:
+En nuestra carpeta de ejemplos se pueden encontrar los ejemplos que usamos
+en cada uno de los ejecutables, para el problema de k-coloracion el caso2 tiene
+muchos nodos y no logramos que nos diera solucion en un tiempo razonable, todos
+los demas si
+
+En el algoritmo genetico se pueden hacer mas personalizaciones cambiando las variables
+globales del archivo satSolverGA/satSolverGA.cpp

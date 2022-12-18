@@ -14,8 +14,7 @@ typedef long long ll;
 
 const int NO_VALUE = 2;
 
-struct sat
-{
+struct sat{
   // list of variables indexed by 0
   vector<int> variables;
   // list of clauses the variables are indexed from 1
@@ -29,3 +28,4 @@ string satToStringPretty(const sat &sa);
 string solSatToString(const sat &sa);
 sat readSatFromFile(string fileName);
 void saveSatInFile(const sat &sa, string path);
+void saveKcolorinSolution( vector<int> varSol, int nColors, int nNodes, string fileName );
