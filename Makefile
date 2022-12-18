@@ -9,5 +9,9 @@ main: src/mainSAT.cpp src/satState/satState.cpp src/satSolver/satSolver.cpp
 mainSatGa: src/mainSATGA.cpp src/satState/satState.cpp src/satSolverGA/satSolverGA.cpp
 	$(CC) $(CFLAGS) -o $(BINARY_SAT_NAME) src/mainSATGA.cpp src/satState/satState.cpp src/satSolverGA/satSolverGA.cpp
 
+mainColoring: src/mainColoring.cpp src/graph/graph.cpp
+	$(CC) $(CFLAGS) -o $(BINARY_COLORING_NAME) src/mainColoring.cpp src/graph/graph.cpp
+
 clean:
 	rm  -f $(BINARY_COLORING_NAME), $(BINARY_SAT_NAME)
+

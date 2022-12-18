@@ -1,22 +1,15 @@
 #include "satState.hpp"
 
-// =======================
-//   Parsers to String  //
-// =======================
+string satToString(const sat &sa)
+{
+  string s = "p cnf " + to_string(sa.variables.size()) + " " + to_string(sa.clauses.size()) + "\n";
+  // for(auto variable : sa.variables)
+  //   s += to_string(variable) + " ";
+  // s += "0\n";
 
-string satToString(const sat& sa ){
-  string s 
-    = "p cnf " 
-    + to_string(sa.variables.size())
-    + " " 
-    + to_string(sa.clauses.size())
-    + "\n";
-  //for(auto variable : sa.variables)
-  //  s += to_string(variable) + " ";
-  //s += "0\n";
-
-  for(auto clause : sa.clauses){
-    for(auto variable : clause)
+  for (auto clause : sa.clauses)
+  {
+    for (auto variable : clause)
       s += to_string(variable) + " ";
     s += "0\n";
   }
@@ -27,39 +20,47 @@ string satToString(const sat& sa ){
   return s;
 }
 
-string satToStringPretty(const sat& sa ){
+string satToStringPretty(const sat &sa)
+{
   string ans = "";
 
   // variables
-  for(auto e: sa.variables) ans += to_string(e) + " ";
+  for (auto e : sa.variables)
+    ans += to_string(e) + " ";
   ans += "\n";
 
   // boolean expression
-  for(auto c: sa.clauses){
-		string clauseStr = "( ";
-		for(auto var: c){
-			int value;
-      if(var>0) value = sa.variables[var-1];
-      else value = 1 - sa.variables[-var-1];
-			clauseStr += to_string(value) + " OR ";
-		}
-		FOR(i,0,3) clauseStr.pop_back();
-		clauseStr += ") AND ";
-		ans += clauseStr;
-	}
-  FOR(i,0,4) ans.pop_back();
+  for (auto c : sa.clauses)
+  {
+    string clauseStr = "( ";
+    for (auto var : c)
+    {
+      int value;
+      if (var > 0)
+        value = sa.variables[var - 1];
+      else
+        value = 1 - sa.variables[-var - 1];
+      clauseStr += to_string(value) + " OR ";
+    }
+    FOR(i, 0, 3)
+    clauseStr.pop_back();
+    clauseStr += ") AND ";
+    ans += clauseStr;
+  }
+  FOR(i, 0, 4)
+  ans.pop_back();
   return ans;
 }
 
-string solSatToString(const sat& sa){
-  string ans = to_string(sa.variables.size()) 
-    + " "
-    + to_string(sa.clauses.size());
+string solSatToString(const sat &sa)
+{
+  string ans = to_string(sa.variables.size()) + " " + to_string(sa.clauses.size());
 
-    FOR(i,0,sa.variables.size()){
-      int var = (sa.variables[i]?1:-1)*(i+1); 
-      ans += "v "+to_string(var)+"\n";
-    }
+  FOR(i, 0, sa.variables.size())
+  {
+    int var = (sa.variables[i] ? 1 : -1) * (i + 1);
+    ans += "v " + to_string(var) + "\n";
+  }
 
   return ans;
 }
@@ -77,15 +78,20 @@ string readFileIntoString(const string& path) {
   return string((std::istreambuf_iterator<char>(input_file)), std::istreambuf_iterator<char>());
 }
 
-vector<string> split(string &s, char c){
-    vector<string> ans;
-    string temp = "";
-    FOR(i,0,s.size()){
-        if(s[i]==c) ans.push_back(temp), temp = "";
-        else temp += s[i];
-    }
-    if(temp.size()) ans.push_back(temp);
-    return ans;
+vector<string> split(string &s, char c)
+{
+  vector<string> ans;
+  string temp = "";
+  FOR(i, 0, s.size())
+  {
+    if (s[i] == c)
+      ans.push_back(temp), temp = "";
+    else
+      temp += s[i];
+  }
+  if (temp.size())
+    ans.push_back(temp);
+  return ans;
 }
 
 sat readSatFromFile(string fileName){
@@ -115,14 +121,16 @@ sat readSatFromFile(string fileName){
   return ans;
 }
 
-void saveSatInFile(const sat& sa, string path){
+void saveSatInFile(const sat &sa, string path)
+{
   fstream file;
   file.open(path, ios_base::out);
 
-  if(!file.is_open()){
-      cout<<"Unable to open the file.\n";
-      exit(1);
+  if (!file.is_open())
+  {
+    cout << "Unable to open the file.\n";
+    exit(1);
   }
-  file<<satToString(sa);
-  file.close(); 
+  file << satToString(sa);
+  file.close();
 }

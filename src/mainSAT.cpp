@@ -16,6 +16,7 @@ int main(int argc, char *argv[]) {
       cout << "Where -p indicates pretty print (it's not mandatory)\n";
       return 0;
    }
+   bool prettyPrint = argc>2 && strcmp(argv[2],"p");
 
    // read the file and save it in memory
    sat sa = readSatFromFile(argv[1]);   
@@ -23,7 +24,7 @@ int main(int argc, char *argv[]) {
    // start time
 	auto start = high_resolution_clock::now();
    // solve the sat instance 
-   solution sol = satSolver(sa);
+   solution sol = satSolver(sa,prettyPrint);
    // end time
 	auto stop = high_resolution_clock::now();
 	
@@ -33,7 +34,7 @@ int main(int argc, char *argv[]) {
 	auto duration = duration_cast<milliseconds>(stop - start);
 	cout << fixed << setprecision(3) << "Tiempo: " << double(duration.count())/double(1000) << " s" << endl;
 
-   if( argc>2 && strcmp(argv[2],"p") ){
+   if( prettyPrint ){
       sa.variables = sol.variables;
       cout << satToStringPretty(sa) << '\n';
    }
