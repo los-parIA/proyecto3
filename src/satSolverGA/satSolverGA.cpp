@@ -97,8 +97,10 @@ bool inference(sat &sa, bool printE = false){
 			if(sa.clausesToCheck.count(pos))
 				sa.clausesToCheck.erase(sa.clausesToCheck.find(pos));
 		for (int posVar : toSet){
+			int v = posVar > 0 ? 1 : 0;
+			if( sa.variables[abs(posVar)-1]==v ) continue;
 			if( sa.variables[abs(posVar) - 1]!=NO_VALUE ) return false;
-			sa.variables[abs(posVar) - 1] = posVar > 0 ? 1 : 0;
+			sa.variables[abs(posVar) - 1] = v;
 		}			
 	}
 

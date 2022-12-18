@@ -3,7 +3,7 @@ c DESCRIPTION: Graph based on Mycielski transformation.
 c FILE: myciel3.col
 c SOURCE: Michael Trick (trick@cmu.edu)
 c              Triangle free (clique number 2) but increasing
-p 3 11 20
+p edges 11 20
 e 1 2
 e 1 4
 e 1 7

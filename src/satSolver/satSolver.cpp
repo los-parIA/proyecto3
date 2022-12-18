@@ -24,6 +24,21 @@ string solutionToString( solution sol ){
 //   states                  //
 // ========================= //
 
+/**
+ * In this function we will make inference over the not 
+ * assigned variables, and also we will check if with
+ * the current assignation is possible to reach a solution
+ * to a sat problem
+ * 
+ * we implement in this function
+ * => unit clause
+ * => pure symbol
+ * 
+ * Input: sat sa, sat data structure where we will make 
+ * inference
+ * Output: true if it's possible to find a solution, and
+ * false otherwise
+*/
 bool isPossibleState(sat &sa){
 	bool cambio = true;
 	while (cambio){
@@ -35,17 +50,17 @@ bool isPossibleState(sat &sa){
 		vector<int> toErase;
 		// variables to be set (can only have 1 value)
 		vector<int> toSet;
-
+		// all the clauses for a variable given (for pure symbol)
 		map<int, vector<pair<int, int>>> clausesOfPosition;
 
-		// indexed from 0
+		// Check the coditions in each active clausule (and inference)
 		FOR(pos,0,sa.clauses.size()){
 			auto c = sa.clauses[pos];
 			bool validClause = false;
 			int canBeTrue = 0, posVar = -1;
 			// indexed from 1
 			for (ll num : c){
-				// remember clause
+				// remember clause (for pure symbol)
 				if(variables[abs(num) - 1] == NO_VALUE)
 					clausesOfPosition[abs(num)].push_back({pos, num});
 
@@ -64,16 +79,18 @@ bool isPossibleState(sat &sa){
 				}
 			}
 
-			if(!(validClause || canBeTrue))
-				return false;
-			if(validClause)
-				toErase.push_back(pos);
+			// If it's not possible to find a solution
+			if(!(validClause || canBeTrue)) return false;
+			// If there is at least 1 true variable in the clause
+			if(validClause) toErase.push_back(pos);
+			// Variables that only can have 1 variable (unit clause)
 			if(canBeTrue == 1 && !validClause){
 				toSet.push_back(posVar);
 				cambio = true;
 			}
 		}
 
+		// pure symbol inference
 		for (auto e : clausesOfPosition){
 			vector<pair<int, int>> &posOfNum = e.second;
 
@@ -97,8 +114,10 @@ bool isPossibleState(sat &sa){
 			if(sa.clausesToCheck.count(pos))
 				sa.clausesToCheck.erase(sa.clausesToCheck.find(pos));
 		for (int posVar : toSet){
+			int v = posVar > 0 ? 1 : 0;
+			if( sa.variables[abs(posVar)-1]==v ) continue;
 			if( sa.variables[abs(posVar) - 1]!=NO_VALUE ) return false;
-			sa.variables[abs(posVar) - 1] = posVar > 0 ? 1 : 0;
+			sa.variables[abs(posVar) - 1] = v;
 		}			
 	}
 
@@ -203,6 +222,9 @@ solution satSolver( sat sa, bool prettyPrint=false ){
 
 	if(prettyPrint && vals.size()){
 		cout <<"Current heuristic value "<< vals[0].first << endl;
+		int cnt = 0;
+		for(auto e: sa.variables) cnt += bool(e!=2);
+		cout << "Variables asignadas = "<< cnt << " de "<< sa.variables.size() << endl;
 	}
 
     for(auto p: vals){

@@ -109,7 +109,7 @@ sat readSatFromFile(string fileName){
       ans.variables = vector<int>(n,NO_VALUE);
     }else{
       vector<ll> c;
-      for(auto s: lineBySpace) if(s.size()) c.push_back(stoi(s));      
+      for(auto s: lineBySpace) if(s.size()) c.push_back(stoi(s));
       c.pop_back();
       ans.clauses.push_back(c);
     }
@@ -133,4 +133,31 @@ void saveSatInFile(const sat &sa, string path)
   }
   file << satToString(sa);
   file.close();
+}
+
+// =======================
+//   Sat to k-coloting  //
+// =======================
+
+void saveKcolorinSolution( vector<int> varSol, int nColors, int nNodes, string fileName ){
+  // this format should be the same as the one in graph.cpp
+  int label[nNodes+1][nColors+1], counter = 1;
+  pair<int,int> labelInv[ (nNodes+1)*(nColors+1)+1 ];
+  FOR(i,1,nNodes+1) FOR(j,1,nColors+1){
+    labelInv[counter] = {i,j};
+    label[i][j] = counter++;
+  }  
+
+  ofstream file;
+  file.open(fileName, fstream::out);
+
+  // => the colors will be printed in order of nodes
+  // first print = color of the first node
+  // second print = color of the secod node
+  // ...
+  FOR(i,0,varSol.size()) if( varSol[i] ){
+    pair<int,int> p = labelInv[i+1];
+    file << p.second << '\n';
+  }
+
 }
