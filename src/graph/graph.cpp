@@ -47,6 +47,7 @@ void addEdge(graph &g, int from, int to)
 graph readGraphFromFile(string fileName)
 {
     size_t vertices = 0, edges = 0, colors = 0;
+    string dummy;
     graph g;
 
     try
@@ -77,12 +78,12 @@ graph readGraphFromFile(string fileName)
                 case 'p':
                     if (vertices || edges)
                         return g;
-                    if (iss >> colors >> vertices >> edges)
+                    if (iss >> dummy >> vertices >> edges)
                     {
 
                         g.V = vertices;
                         g.E = edges;
-                        g.colors = colors;
+                        g.colors = -1;
                     }
                     break;
                 case 'e':
