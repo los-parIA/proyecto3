@@ -39,7 +39,7 @@ bool inference(sat &sa, bool printE = false){
 		map<int, vector<pair<int, int>>> clausesOfPosition;
 
 		// indexed from 0
-		for (int pos : sa.clausesToCheck){
+		FOR(pos,0,sa.clauses.size()){
 			auto c = sa.clauses[pos];
 			bool validClause = false;
 			int canBeTrue = 0, posVar = -1;
@@ -58,9 +58,9 @@ bool inference(sat &sa, bool printE = false){
 					validClause = true;
 				}
 
-				if(variables[abs(num) - 1] == NO_VALUE){
+				if(variables[abs(num) - 1] == NO_VALUE){					
 					canBeTrue++;
-					posVar = num;
+					posVar = num;					
 				}
 			}
 
@@ -70,35 +70,36 @@ bool inference(sat &sa, bool printE = false){
 				toErase.push_back(pos);
 			if(canBeTrue == 1 && !validClause){
 				toSet.push_back(posVar);
-				//cambio = true;
+				cambio = true;
 			}
 		}
 
-		// for (auto e : clausesOfPosition){
-		// 	vector<pair<int, int>> &posOfNum = e.second;
+		for (auto e : clausesOfPosition){
+			vector<pair<int, int>> &posOfNum = e.second;
 
-		// 	if(posOfNum.size() == 1)
-		// 		continue;
+			if(posOfNum.size() == 1)
+				continue;
 
-		// 	bool allEq = true;
-		// 	FOR(i, 1, posOfNum.size())
-		// 	allEq = allEq && bool(posOfNum[i - 1].second == posOfNum[i].second);
+			bool allEq = true;
+			FOR(i, 1, posOfNum.size())
+			allEq = allEq && bool(posOfNum[i - 1].second == posOfNum[i].second);
 
-		// 	if(allEq){
-		// 		for (auto e : posOfNum)
-		// 			toErase.push_back(e.first);
-		// 		toSet.push_back(e.first);
-		// 		cambio = true;
-		// 	}
-		// }
+			if(allEq){
+				for (auto e : posOfNum)
+					toErase.push_back(e.first);
+				toSet.push_back(e.first);
+				cambio = true;
+			}
+		}
 
 		// erase the clauses and set the variables for the inference
-		if(printE) cout << toErase.size() << endl;
 		for (int pos : toErase)
 			if(sa.clausesToCheck.count(pos))
 				sa.clausesToCheck.erase(sa.clausesToCheck.find(pos));
-		// for (int posVar : toSet)
-		// 	sa.variables[abs(posVar) - 1] = posVar > 0 ? 1 : 0;
+		for (int posVar : toSet){
+			if( sa.variables[abs(posVar) - 1]!=NO_VALUE ) return false;
+			sa.variables[abs(posVar) - 1] = posVar > 0 ? 1 : 0;
+		}			
 	}
 
 	return true;
@@ -137,6 +138,7 @@ void mutation(sat &sa){
 		int prevValVariable = sa.variables[p];
 		set<int> clausesToCheck = sa.clausesToCheck;
 
+
 		// mutation
 		sa.variables[p] = rand() % 2;
 
@@ -147,14 +149,13 @@ void mutation(sat &sa){
 			sa.clausesToCheck = clausesToCheck;
 
 			// another try
-			// sa.variables[p] = 1 - sa.variables[p];
-			// if(inference(sa)) numMut++;
-			// else{
-			// 	FOR(i,0,sa.variables.size()) sa.variables[i] = NO_VALUE;
-			// 	FOR(i,0,sa.clauses.size()) sa.clausesToCheck.insert(i);				
-			// 	break;
-			// }
-			// if(rand()%100<30) break;
+			sa.variables[p] = 1 - sa.variables[p];
+			if(inference(sa)) numMut++;
+			else{
+				FOR(i,0,sa.variables.size()) sa.variables[i] = NO_VALUE;
+				FOR(i,0,sa.clauses.size()) sa.clausesToCheck.insert(i);				
+				break;
+			}
 		}		
 	}
 }
@@ -170,8 +171,8 @@ vector<sat> randomCandidates(int n, int nVariables, vector<vector<ll>> clauses){
 		// all the clauses have to be checked
 		FOR(j, 0, s.clauses.size())
 			s.clausesToCheck.insert(j);
-		// make valid mutations
-		mutation(s);		
+		// make valid mutations		
+		mutation(s);	
 
 		if(inference(s)) ans.push_back(s);
 		else i--;
@@ -253,20 +254,16 @@ void BTSolver(sat &sa){
 	}
 }
 
-int h(sat sa){	
+int h(sat &sa){	
 	// if the number of variables with NO_VALUE
 	// is less than the limit => make backtracking
 	int countVariables = 0;
 	FOR(i,0,sa.variables.size())
 		countVariables += sa.variables[i]==NO_VALUE;
 
-	//cout <<"Variables libres "<<countVariables << endl;
 	if(countVariables<MAX_VARIABLES_TO_BT){
-		FOR(i,0,sa.clauses.size()) sa.clausesToCheck.insert(i);
-		cout << "? " << inference(sa) << endl;
-		cout << "Antes "<<sa.clausesToCheck.size() << endl;
+		FOR(i,0,sa.clauses.size()) sa.clausesToCheck.insert(i);		
 		BTSolver(sa);
-		cout << "Hice BT, encontre sol ? " << isSatSolution(sa) << " "<< sa.clausesToCheck.size() << " "<< sa.clauses.size() << endl;
 		if( isSatSolution(sa) ) return 0;
 		else{
 			int impossibleValue = 0;
@@ -336,13 +333,11 @@ solution satSolver(sat sa, int epochs, int Nindv, bool prettyPrint){
 		// }
 		// best.insert(best.end(), mut.begin(), mut.end());
 
-		for(auto e: best) if(e.clausesToCheck.size()==0) cout <<"=================> El culpable es la best ?????????"<< endl;
 
 		// generate new random candidates to have variety
 		vector<sat> randomCand = randomCandidates(Nindv, sa.variables.size(), sa.clauses);
 		best.insert(best.end(), randomCand.begin(), randomCand.end());
 
-		for(auto e: randomCand) if(e.clausesToCheck.size()==0) cout <<"=================> El culpable es la mutacion"<< endl;
 
 		// merge any two candidates
 		vector<sat> bestMerge;
@@ -350,7 +345,6 @@ solution satSolver(sat sa, int epochs, int Nindv, bool prettyPrint){
 			FOR(j, i + 1, best.size()) if(rand()%100<PROB_MERGE){
 				sat newSat = merge(best[i], best[j]);
 				bestMerge.push_back(newSat);
-				if( newSat.clausesToCheck.size()==0 ) cout <<"=================> El culpable es el merge"<< endl;
 			}
 		}
 		best.insert(best.end(), bestMerge.begin(), bestMerge.end());
@@ -363,7 +357,6 @@ solution satSolver(sat sa, int epochs, int Nindv, bool prettyPrint){
 		sort(valuesBest.begin(), valuesBest.end());
 		vector<sat> newBest;		
 		FOR(i, 0, valuesBest.size()){
-			if(valuesBest[i].second>=best.size()) cout << "?????????????????\n";
 			if(i<Nindv){
 				newBest.push_back(best[valuesBest[i].second]);		
 			}else if( rand()%100<PROB_SURVIVE ){
