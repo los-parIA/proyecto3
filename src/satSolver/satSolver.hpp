@@ -23,4 +23,4 @@ struct solution{
 
 const solution nullSolution = {0,{}};
 string solutionToString( solution s );
-solution satSolver( sat sa );
+solution satSolver( sat sa, bool prettyPrint );

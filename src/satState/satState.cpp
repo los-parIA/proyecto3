@@ -69,13 +69,10 @@ string solSatToString(const sat &sa)
 //   functions for files  //
 // =========================
 
-string readFileIntoString(const string &path)
-{
+string readFileIntoString(const string& path) {
   ifstream input_file(path);
-  if (!input_file.is_open())
-  {
-    cerr << "Could not open the file - '"
-         << path << "'" << endl;
+  if (!input_file.is_open()) {
+    cerr << "Could not open the file - '"<< path << "'" << endl;
     exit(EXIT_FAILURE);
   }
   return string((std::istreambuf_iterator<char>(input_file)), std::istreambuf_iterator<char>());
@@ -97,36 +94,30 @@ vector<string> split(string &s, char c)
   return ans;
 }
 
-sat readSatFromFile(string fileName)
-{
-  sat ans = {{}, {}, {}};
+sat readSatFromFile(string fileName){
+  sat ans = { {}, {}, {} };
   string f = readFileIntoString(fileName);
 
-  vector<string> lines = split(f, '\n');
-  for (string line : lines)
-  {
-    vector<string> lineBySpace = split(line, ' ');
-    if (lineBySpace.size() < 1 || lineBySpace[0] == "c")
+  vector<string> lines = split(f,'\n');
+  for(string line: lines){
+    vector<string> lineBySpace = split(line,' ');
+    if(lineBySpace.size()<1 ||lineBySpace[0]=="c" ) 
       continue;
 
-    if (lineBySpace.size() > 3 && lineBySpace[0] == "p" && lineBySpace[1] == "cnf")
-    {
+    if( lineBySpace.size()>3 && lineBySpace[0]=="p" && lineBySpace[1]=="cnf" ){      
       int n = stoi(lineBySpace[2]);
-      ans.variables = vector<int>(n, NO_VALUE);
-    }
-    else
-    {
+      ans.variables = vector<int>(n,NO_VALUE);
+    }else{
       vector<ll> c;
-      for (auto s : lineBySpace)
-        c.push_back(stoi(s));
+      for(auto s: lineBySpace) if(s.size()) c.push_back(stoi(s));      
       c.pop_back();
       ans.clauses.push_back(c);
     }
   }
 
   // all the clauses have to be checked
-  FOR(i, 0, ans.clauses.size())
-  ans.clausesToCheck.insert(i);
+  FOR(i,0,ans.clauses.size()) 
+    ans.clausesToCheck.insert(i);
   return ans;
 }
 

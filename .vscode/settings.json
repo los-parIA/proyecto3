@@ -1,6 +1,9 @@
 {
+  "editor.formatOnSave": false,
   "files.associations": {
     "chrono": "cpp",
+    "*.tcc": "cpp",
+    "iostream": "cpp",
     "array": "cpp",
     "atomic": "cpp",
     "bit": "cpp",

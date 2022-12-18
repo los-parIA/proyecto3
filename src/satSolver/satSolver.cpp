@@ -24,76 +24,82 @@ string solutionToString( solution sol ){
 //   states                  //
 // ========================= //
 
-bool isPossibleState( sat &sa ){
+bool isPossibleState(sat &sa){
 	bool cambio = true;
-	while(cambio){
+	while (cambio){
 		cambio = false;
 		vector<int> &variables = sa.variables;
 		int n = sa.variables.size();
 
-        // clauses to be erased
+		// clauses to be erased
 		vector<int> toErase;
-        // variables to be set (can only have 1 value)
+		// variables to be set (can only have 1 value)
 		vector<int> toSet;
 
-		map<int,vector<pair<int,int>>> clausesOfPosition;
+		map<int, vector<pair<int, int>>> clausesOfPosition;
 
 		// indexed from 0
-		for(int pos: sa.clausesToCheck){
+		FOR(pos,0,sa.clauses.size()){
 			auto c = sa.clauses[pos];
 			bool validClause = false;
 			int canBeTrue = 0, posVar = -1;
 			// indexed from 1
-			for(ll num: c){
+			for (ll num : c){
 				// remember clause
-				if( variables[abs(num)-1]==NO_VALUE ) 
-					clausesOfPosition[abs(num)].push_back({pos,num});
+				if(variables[abs(num) - 1] == NO_VALUE)
+					clausesOfPosition[abs(num)].push_back({pos, num});
 
-				// if (p1 v p2 v p3) variable have to be true
-				if( num>0 && (variables[num-1]==1) ){
+				// if(p1 v p2 v p3) variable have to be true
+				if(num > 0 && (variables[num - 1] == 1)){
 					validClause = true;
 				}
-				// if (not p1 v not 2) varaible have to be false
-				if( num<0 && (variables[-num-1]==0) ){
+				// if(not p1 v not 2) varaible have to be false
+				if(num < 0 && (variables[-num - 1] == 0)){
 					validClause = true;
 				}
 
-				if(variables[abs(num)-1]==NO_VALUE){ 
+				if(variables[abs(num) - 1] == NO_VALUE){					
 					canBeTrue++;
-					posVar = num;
+					posVar = num;					
 				}
 			}
 
-			if(!(validClause||canBeTrue)) return false;
-			if(validClause) toErase.push_back(pos);
-			if( canBeTrue == 1 && !validClause ){				
+			if(!(validClause || canBeTrue))
+				return false;
+			if(validClause)
+				toErase.push_back(pos);
+			if(canBeTrue == 1 && !validClause){
 				toSet.push_back(posVar);
-				cambio=true;
+				cambio = true;
 			}
 		}
 
-		for(auto e: clausesOfPosition){
-			vector<pair<int,int>> &posOfNum = e.second;
+		for (auto e : clausesOfPosition){
+			vector<pair<int, int>> &posOfNum = e.second;
 
-			if(posOfNum.size()==1) continue;
+			if(posOfNum.size() == 1)
+				continue;
 
 			bool allEq = true;
-			FOR(i,1,posOfNum.size())
-				allEq = allEq && bool(posOfNum[i-1].second==posOfNum[i].second);
-			
+			FOR(i, 1, posOfNum.size())
+			allEq = allEq && bool(posOfNum[i - 1].second == posOfNum[i].second);
+
 			if(allEq){
-				for(auto e: posOfNum) toErase.push_back(e.first);
+				for (auto e : posOfNum)
+					toErase.push_back(e.first);
 				toSet.push_back(e.first);
 				cambio = true;
 			}
 		}
 
-        // erase the clauses and set the variables for the inference
-        for(int pos : toErase)
-            if( sa.clausesToCheck.count(pos) ) 
-                sa.clausesToCheck.erase(sa.clausesToCheck.find(pos));
-        for(int posVar: toSet)
-            sa.variables[abs(posVar)-1] = posVar>0?1:0;
+		// erase the clauses and set the variables for the inference
+		for (int pos : toErase)
+			if(sa.clausesToCheck.count(pos))
+				sa.clausesToCheck.erase(sa.clausesToCheck.find(pos));
+		for (int posVar : toSet){
+			if( sa.variables[abs(posVar) - 1]!=NO_VALUE ) return false;
+			sa.variables[abs(posVar) - 1] = posVar > 0 ? 1 : 0;
+		}			
 	}
 
 	return true;
@@ -103,7 +109,6 @@ vector<sat> nextStates( sat sa ){
 	vector<sat> ans;
 	vector<int> variables = sa.variables;
 	int n = variables.size();
-
 
 	FOR(i,0,n) if(variables[i]==NO_VALUE){
 		vector<int> newVariablesTrue = variables;
@@ -188,7 +193,7 @@ int h( sat sa ){
     return totAns - ans;
 }
 
-solution satSolver( sat sa ){
+solution satSolver( sat sa, bool prettyPrint=false ){
     if( isSatSolution(sa) ) return {1,sa.variables};
     vector<sat> nextS = nextStates(sa);
 
@@ -196,8 +201,12 @@ solution satSolver( sat sa ){
     FOR(i,0,nextS.size()) vals.push_back({h(nextS[i]),i});
     sort(vals.begin(),vals.end());
 
+	if(prettyPrint && vals.size()){
+		cout <<"Current heuristic value "<< vals[0].first << endl;
+	}
+
     for(auto p: vals){
-        solution ans = satSolver( nextS[p.second] );
+        solution ans = satSolver( nextS[p.second], prettyPrint );
         if(ans.foundSolution) return ans;
     }
     return {0,sa.variables};
