@@ -69,13 +69,12 @@ string solSatToString(const sat& sa){
 // =========================
 
 string readFileIntoString(const string& path) {
-    ifstream input_file(path);
-    if (!input_file.is_open()) {
-        cerr << "Could not open the file - '"
-             << path << "'" << endl;
-        exit(EXIT_FAILURE);
-    }
-    return string((std::istreambuf_iterator<char>(input_file)), std::istreambuf_iterator<char>());
+  ifstream input_file(path);
+  if (!input_file.is_open()) {
+    cerr << "Could not open the file - '"<< path << "'" << endl;
+    exit(EXIT_FAILURE);
+  }
+  return string((std::istreambuf_iterator<char>(input_file)), std::istreambuf_iterator<char>());
 }
 
 vector<string> split(string &s, char c){
@@ -90,30 +89,30 @@ vector<string> split(string &s, char c){
 }
 
 sat readSatFromFile(string fileName){
-    sat ans = { {}, {}, {} };
-    string f = readFileIntoString(fileName);
+  sat ans = { {}, {}, {} };
+  string f = readFileIntoString(fileName);
 
-    vector<string> lines = split(f,'\n');
-    for(string line: lines){
-        vector<string> lineBySpace = split(line,' ');
-        if(lineBySpace.size()<1 ||lineBySpace[0]=="c" ) 
-            continue;
+  vector<string> lines = split(f,'\n');
+  for(string line: lines){
+    vector<string> lineBySpace = split(line,' ');
+    if(lineBySpace.size()<1 ||lineBySpace[0]=="c" ) 
+      continue;
 
-        if( lineBySpace.size()>3 && lineBySpace[0]=="p" && lineBySpace[1]=="cnf" ){
-            int n = stoi(lineBySpace[2]);
-            ans.variables = vector<int>(n,NO_VALUE);
-        }else{
-            vector<ll> c;
-            for(auto s: lineBySpace) c.push_back(stoi(s));
-            c.pop_back();
-            ans.clauses.push_back(c);
-        }
+    if( lineBySpace.size()>3 && lineBySpace[0]=="p" && lineBySpace[1]=="cnf" ){      
+      int n = stoi(lineBySpace[2]);
+      ans.variables = vector<int>(n,NO_VALUE);
+    }else{
+      vector<ll> c;
+      for(auto s: lineBySpace) if(s.size()) c.push_back(stoi(s));      
+      c.pop_back();
+      ans.clauses.push_back(c);
     }
+  }
 
-    // all the clauses have to be checked
-    FOR(i,0,ans.clauses.size()) 
-        ans.clausesToCheck.insert(i);
-    return ans;
+  // all the clauses have to be checked
+  FOR(i,0,ans.clauses.size()) 
+    ans.clausesToCheck.insert(i);
+  return ans;
 }
 
 void saveSatInFile(const sat& sa, string path){
