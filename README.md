@@ -20,12 +20,12 @@ The genes are the values of the variables (0 or 1 or 2) of the SAT solution. In 
 You can make 3 binaries with the make command
 
 * SAT solver (-p is optional)
-./dpllSolver <file-cnf> -p 
+>./dpllSolver file-cnf -p 
 
 * SAT solver using genetic algorithm (-p is optional)
-./dpllSolver <file-cnf> <numberOfEpochs> <numberOfindividuals> -p
+>./dpllSolver file-cnf numberOfEpochs numberOfindividuals -p
 
 * k-coloring solver 
-./coloringSolver <k-coloring-file> <output-file-name>
+>./coloringSolver k-coloring-file output-file-name
 
 (you can find input files in the test folder)
